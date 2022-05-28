@@ -20,7 +20,7 @@ func main() {
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
 
-	userInput := user.RegisterUser{}
+	userInput := user.RegisterUserInput{}
 	userInput.Name = "lylia"
 	userInput.Email = "lylia@gmail.com"
 	userInput.Occupation = "Mage"
