@@ -5,7 +5,7 @@ import (
 )
 
 type Service interface {
-	RegisterUser(input RegisterUser) (User, error)
+	RegisterUser(input RegisterUserInput) (User, error)
 }
 
 type service struct {
@@ -16,7 +16,7 @@ func NewService(repository Repository) *service{
 	return &service{repository}
 }
 
-func (s *service) RegisterUser(input RegisterUser) (User, error){
+func (s *service) RegisterUser(input RegisterUserInput) (User, error){
 	// struct dari user
 	user := User{}
 	// melakukan hash password

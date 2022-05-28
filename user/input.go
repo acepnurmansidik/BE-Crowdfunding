@@ -1,6 +1,6 @@
 package user
 
-type RegisterUser struct {
+type RegisterUserInput struct {
 	Name string
 	Occupation string
 	Email string
