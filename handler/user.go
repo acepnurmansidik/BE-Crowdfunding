@@ -20,22 +20,26 @@ func (h *userHandler) RegisterUser(c *gin.Context){
 	// tangkap input dari user
 	var input user.RegisterUserInput
 
-	// mapping input dari user ke struct RegisterUserInput
 	err := c.ShouldBindJSON(&input)
 	if err != nil{
-		c.JSON(http.StatusBadRequest, nil)
+		response := helper.APIResponse("Register account failed", http.StatusBadGateway, "failed", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
 	}
-
+	
+	// mapping input dari user ke struct RegisterUserInput
 	// save input user ke service
 	// passing struct sebagai parameter service
 	newUser, err := h.userService.RegisterUser(input)
 	if err != nil{
-		c.JSON(http.StatusBadRequest, nil)
+		response := helper.APIResponse("Register account failed", http.StatusBadGateway, "failed", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
 	}
 
 	// melakukan format user
 	formatUser := user.FormatUser(newUser, "iniadalahtoken")
-	
+
 	// format response API
 	response := helper.APIResponse("Account has been registered", http.StatusOK, "success", formatUser)
 	// response
