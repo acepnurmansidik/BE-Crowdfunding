@@ -28,12 +28,16 @@ func (h *userHandler) RegisterUser(c *gin.Context){
 
 	// save input user ke service
 	// passing struct sebagai parameter service
-	user, err := h.userService.RegisterUser(input)
+	newUser, err := h.userService.RegisterUser(input)
 	if err != nil{
 		c.JSON(http.StatusBadRequest, nil)
 	}
 
-	response := helper.APIResponse("Account has been registered", http.StatusOK, "success", user)
+	// melakukan format user
+	formatUser := user.FormatUser(newUser, "iniadalahtoken")
+	
+	// format response API
+	response := helper.APIResponse("Account has been registered", http.StatusOK, "success", formatUser)
 	// response
 	c.JSON(http.StatusOK, response)
 }
