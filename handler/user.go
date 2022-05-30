@@ -144,4 +144,42 @@ func (h *userHandler) UploadAvatar(c *gin.Context){
 	// JWT (sementara hardcode, seakan2 user yang login)
 	// repo ambil data dari user yang ID = 1
 	// repo update data user simpan lokasi file
+
+	// ambil avatar gambar dari user
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	// set lokasi avatar
+	path := "images/" + file.Filename
+
+	// upload file dari user ke folder images
+	err = c.SaveUploadedFile(file, path)
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	// id user didapat dari JWT, sementara hardcode
+	userID := 1
+
+	// save avatar ke db berdasarkan userID
+	_, err = h.userService.SaveAvatar(userID, path)
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	data := gin.H{"is_uploaded": true}
+	response := helper.APIResponse("Avatar successfuly uploaded", http.StatusOK, "success", data)
+	c.JSON(http.StatusOK, response)
+
 }
