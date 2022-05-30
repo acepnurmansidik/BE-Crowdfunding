@@ -3,6 +3,7 @@ package main
 import (
 	"bwastartup/handler"
 	"bwastartup/user"
+	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -21,6 +22,18 @@ func main() {
 
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
+
+	// mencari user dengan email
+	userByEmail, err := userRepository.FindByEmail("acepnurmansidik@gmail.com")
+	if err != nil{
+		fmt.Println(err.Error())
+	}
+	if (userByEmail.ID == 0){
+		fmt.Println("accound not found")
+	}else {
+		fmt.Println(userByEmail)
+	}
+	// register user
 	userHandler := handler.NewUserHandler(userService)
 
 	router := gin.Default()

@@ -33,7 +33,7 @@ func (s *service) RegisterUser(input RegisterUserInput) (User, error){
 	user.Role = "user"
 
 	newUser, err := s.repository.Save(user)
-		if err != nil{
+	if err != nil{
 		return newUser, err
 	}
 
