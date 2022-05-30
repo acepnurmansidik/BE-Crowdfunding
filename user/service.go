@@ -9,7 +9,7 @@ import (
 type Service interface {
 	RegisterUser(input RegisterUserInput) (User, error)
 	Login(input LoginUserInput) (User, error)
-	isEmailAvailable(input CheckEmailAvailable) (bool, error)
+	IsEmailAvailable(input CheckEmailInput) (bool, error)
 }
 
 type service struct {
@@ -68,7 +68,7 @@ func (s *service) Login(input LoginUserInput) (User, error){
 	return user, nil
 }
 
-func (s *service) isEmailAvailable(input CheckEmailAvailable) (bool, error){
+func (s *service) IsEmailAvailable(input CheckEmailInput) (bool, error){
 	// ambil email dari user
 	email := input.Email
 
