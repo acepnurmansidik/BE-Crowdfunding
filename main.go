@@ -3,9 +3,13 @@ package main
 import (
 	"bwastartup/auth"
 	"bwastartup/handler"
+	"bwastartup/helper"
 	"bwastartup/user"
 	"log"
+	"net/http"
+	"strings"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -30,8 +34,70 @@ func main() {
 	api.POST("/users", userHandler.RegisterUser)
 	api.POST("/sessions", userHandler.Login)
 	api.POST("/email_checker", userHandler.IsEmailAvailable)
-	api.POST("/avatar", userHandler.UploadAvatar)
+	api.POST("/avatar", authMiddleware(authService, userService), userHandler.UploadAvatar)
 
 	router.Run()
 	
+}
+
+// buat middleware
+// bungkus menjadi function utk mengembalikan sebuah func gin handler
+func authMiddleware(authService auth.Service, userService user.Service) gin.HandlerFunc {
+	// return func gin handler
+	return func (c *gin.Context){
+		// ambil token dari header
+		authHeader := c.GetHeader("Authorization")
+
+		// cek isinya ada bearer
+		if !strings.Contains(authHeader, "Bearer"){
+			// buat responsenya
+			response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil)
+			// AbortWithStatusJSON, berfungsi utk menghentikan program jika ada error
+			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
+			return
+		}
+
+		stringToken := ""
+		arrayToken := strings.Split(authHeader, " ")
+		if len(arrayToken) == 2 {
+			// set token ke var string
+			stringToken = arrayToken[1]
+		}
+
+		// validasi token
+		token, err := authService.ValidateToken(stringToken)
+		if err != nil {
+			// buat responsenya
+			response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil)
+			// AbortWithStatusJSON, berfungsi utk menghentikan program jika ada error
+			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
+			return
+		}
+
+		// ubah token ke jwt mapClaims
+		claim, ok := token.Claims.(jwt.MapClaims)
+		if !ok || !token.Valid {
+			// buat responsenya
+			response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil)
+			// AbortWithStatusJSON, berfungsi utk menghentikan program jika ada error
+			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
+			return
+		}
+
+		// ambil user_id di dapat dari client, lalu ubah ke dalam int
+		userID := int(claim["user_id"].(float64))
+
+		// cari user yg ddapat dari token yang dikirim dari client
+		user, err := userService.GetUserByID(userID)
+		if err != nil {
+			// buat responsenya
+			response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil)
+			// AbortWithStatusJSON, berfungsi utk menghentikan program jika ada error
+			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
+			return
+		}
+
+		// set user yang sedag akses aplikasi
+		c.Set("currentUser", user)
+	}
 }
