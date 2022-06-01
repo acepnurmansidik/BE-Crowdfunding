@@ -2,9 +2,11 @@ package main
 
 import (
 	"bwastartup/auth"
+	"bwastartup/campaign"
 	"bwastartup/handler"
 	"bwastartup/helper"
 	"bwastartup/user"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -28,6 +30,17 @@ func main() {
 	userService := user.NewService(userRepository)
 	authService := auth.NewService()
 	userHandler := handler.NewUserHandler(userService, authService)
+
+	campaignRepository := campaign.NewRepository(db)
+	campaigns, err:= campaignRepository.FindByUserID(5)
+	allcamps, err := campaignRepository.FindAll()
+	if err != nil {
+		fmt.Println("Not found")
+	}
+
+	fmt.Println(campaigns)
+	fmt.Println("######")
+	fmt.Println(allcamps)
 
 	router := gin.Default()
 	api := router.Group("/api/v1")
