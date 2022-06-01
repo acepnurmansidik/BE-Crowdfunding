@@ -32,15 +32,18 @@ func main() {
 	userHandler := handler.NewUserHandler(userService, authService)
 
 	campaignRepository := campaign.NewRepository(db)
-	campaigns, err:= campaignRepository.FindByUserID(5)
-	allcamps, err := campaignRepository.FindAll()
+	campaignService := campaign.NewService(campaignRepository)
+	campaigns, err := campaignService.FindCampaign(7)
 	if err != nil {
 		fmt.Println("Not found")
 	}
 
 	fmt.Println(campaigns)
-	fmt.Println("######")
-	fmt.Println(allcamps)
+	fmt.Println("#########################")
+
+	campaignAll, err := campaignRepository.FindAll()
+	
+	fmt.Println(campaignAll)
 
 	router := gin.Default()
 	api := router.Group("/api/v1")
