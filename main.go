@@ -38,12 +38,10 @@ func main() {
 		fmt.Println("Not found")
 	}
 
-	fmt.Println(campaigns)
-	fmt.Println("#########################")
-
-	campaignAll, err := campaignRepository.FindAll()
-	
-	fmt.Println(campaignAll)
+	for _, camcampaign := range campaigns {
+		fmt.Println(camcampaign.Name)
+		fmt.Println(camcampaign.CampaignImages[0].FileName)
+	}
 
 	router := gin.Default()
 	api := router.Group("/api/v1")

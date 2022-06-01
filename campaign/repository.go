@@ -19,7 +19,7 @@ func NewRepository(db *gorm.DB) *repository{
 
 func (r *repository) FindAll() ([]Campaign, error){
 	var campaigns []Campaign
-	err := r.db.Find(&campaigns).Error
+	err := r.db.Preload("CampaignImages", "campaign_images.is_primary = 1").Find(&campaigns).Error
 	if err != nil {
 		return campaigns, err
 	}
@@ -29,7 +29,8 @@ func (r *repository) FindAll() ([]Campaign, error){
 
 func (r *repository) FindByUserID(userID int) ([]Campaign, error){
 	var campaigns []Campaign
-	err := r.db.Where("user_id = ?", userID).Find(&campaigns).Error
+	// Preload, utk mengload relasi yang terhubung
+	err := r.db.Where("user_id = ?", userID).Preload("CampaignImages", "campaign_images.is_primary = 1").Find(&campaigns).Error
 	if err != nil {
 		return campaigns, err
 	}
