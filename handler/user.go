@@ -179,8 +179,10 @@ func (h *userHandler) UploadAvatar(c *gin.Context){
 		return
 	}
 
-	// id user didapat dari JWT, sementara hardcode
-	userID := 1
+	// ambil ID user dari middlware yang sudah di set
+	// lalu ubah ke user ".(user.User)"
+	currentUser := c.MustGet("currentUser").(user.User)
+	userID := currentUser.ID
 
 	// set lokasi avatar
 	randomCrypto, _ := rand.Int(rand.Reader, big.NewInt(9999999999))
