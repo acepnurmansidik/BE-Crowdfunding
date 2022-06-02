@@ -6,7 +6,6 @@ import (
 	"bwastartup/handler"
 	"bwastartup/helper"
 	"bwastartup/user"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -26,22 +25,18 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	userRepository := user.NewRepository(db)
-	userService := user.NewService(userRepository)
 	authService := auth.NewService()
-	userHandler := handler.NewUserHandler(userService, authService)
 
+	userRepository := user.NewRepository(db)
 	campaignRepository := campaign.NewRepository(db)
-	campaignService := campaign.NewService(campaignRepository)
-	campaigns, err := campaignService.FindCampaign(7)
-	if err != nil {
-		fmt.Println("Not found")
-	}
 
-	for _, camcampaign := range campaigns {
-		fmt.Println(camcampaign.Name)
-		fmt.Println(camcampaign.CampaignImages[0].FileName)
-	}
+	userService := user.NewService(userRepository)
+	campaignService := campaign.NewService(campaignRepository)
+
+	userHandler := handler.NewUserHandler(userService, authService)
+	campaignHandler := handler.NewCampaignHandler(campaignService)
+
+
 
 	router := gin.Default()
 	api := router.Group("/api/v1")
@@ -49,6 +44,7 @@ func main() {
 	api.POST("/sessions", userHandler.Login)
 	api.POST("/email_checker", userHandler.IsEmailAvailable)
 	api.POST("/avatar", authMiddleware(authService, userService), userHandler.UploadAvatar)
+	api.GET("/campaigns", campaignHandler.GetCampaigns)
 
 	router.Run()
 	
