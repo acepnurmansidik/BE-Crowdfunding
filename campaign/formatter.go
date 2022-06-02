@@ -28,12 +28,8 @@ func FormatCampaign(campaign Campaign) CampaignsFormatter {
 }
 
 func FormatCampaigns(campaigns []Campaign) []CampaignsFormatter {
-	// cek data campaign
-	if len(campaigns) == 0 {
-		return []CampaignsFormatter{}
-	}
 	// buat slice utk menampung datanya
-	var campaignsFormatter []CampaignsFormatter
+	campaignsFormatter := []CampaignsFormatter{}
 	// looping setiap datanya
 	for _, campaign := range campaigns {
 		campaignFormatter := FormatCampaign(campaign)
