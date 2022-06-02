@@ -5,8 +5,9 @@ import (
 )
 
 type Repository interface{
-	GetAll() ([]Campaign, error)
-	GetByUserID(userID int) ([]Campaign, error)
+	FindAll() ([]Campaign, error)
+	FindByUserID(userID int) ([]Campaign, error)
+	FindByID(ID int) (Campaign, error)
 }
 
 type repository struct{
@@ -17,7 +18,7 @@ func NewRepository(db *gorm.DB) *repository{
 	return &repository{db}
 }
 
-func (r *repository) GetAll() ([]Campaign, error){
+func (r *repository) FindAll() ([]Campaign, error){
 	var campaigns []Campaign
 	err := r.db.Preload("CampaignImages", "campaign_images.is_primary = 1").Find(&campaigns).Error
 	if err != nil {
@@ -27,7 +28,7 @@ func (r *repository) GetAll() ([]Campaign, error){
 	return campaigns, nil
 }
 
-func (r *repository) GetByUserID(userID int) ([]Campaign, error){
+func (r *repository) FindByUserID(userID int) ([]Campaign, error){
 	var campaigns []Campaign
 	// Preload, utk mengload relasi yang terhubung
 	err := r.db.Where("user_id = ?", userID).Preload("CampaignImages", "campaign_images.is_primary = 1").Find(&campaigns).Error
@@ -36,4 +37,14 @@ func (r *repository) GetByUserID(userID int) ([]Campaign, error){
 	}
 
 	return campaigns, nil
+}
+
+func (r *repository) FindByID(ID int) (Campaign, error){
+	var campaign Campaign
+	err := r.db.Where("ID = ?", ID).Preload("User").Preload("CampaignImages").Find(&campaign).Error
+	if err != nil {
+		return campaign, err
+	}
+
+	return campaign, nil
 }
