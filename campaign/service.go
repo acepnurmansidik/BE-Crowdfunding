@@ -1,5 +1,12 @@
 package campaign
 
+import (
+	"fmt"
+	"strconv"
+
+	"github.com/gosimple/slug"
+)
+
 type Service interface{
 	GetCampaigns(userID int)([]Campaign, error)
 	GetCampaignByID(input GetCampaignDetailInput) (Campaign, error)
@@ -47,9 +54,11 @@ func (s *service) CreateCampaign(input CreateCampaignInput) (Campaign, error){
 	campaign.ShortDescription = input.ShortDescription
 	campaign.Description = input.Description
 	campaign.GoalAmount = input.GoalAmount
-	campaign.Perks = input.Perks
-
+	campaign.UserID = input.User.ID
 	// pembuatan slug
+	id := strconv.Itoa(input.User.ID)
+	slugCandidate := fmt.Sprintf("%s %s", input.Name, id)
+	campaign.Slug = slug.Make(slugCandidate)
 
 	newCampaign, err := s.repository.Save(campaign)
 	if err != nil {
