@@ -41,15 +41,14 @@ type CampaignImageFormatter struct {
 }
 
 func FormatCampaign(campaign Campaign) CampaignsFormatter {
-	formatter := CampaignsFormatter{
-		ID:               campaign.ID,
-		Name:            campaign.Name,
-		ShortDescription: campaign.ShortDescription,
-		GoalAmount:       campaign.GoalAmount,
-		CurrentAmount:    campaign.CurrentAmount,
-		Slug:             campaign.Slug,
-		ImageUrl:         "",
-	}
+	formatter := CampaignsFormatter{}
+	formatter.ID = campaign.ID
+	formatter.Name = campaign.Name
+	formatter.ShortDescription = campaign.ShortDescription
+	formatter.GoalAmount = campaign.GoalAmount
+	formatter.CurrentAmount = campaign.CurrentAmount
+	formatter.Slug = campaign.Slug
+	formatter.ImageUrl = ""
 
 	if len(campaign.CampaignImages) > 0 {
 		formatter.ImageUrl = campaign.CampaignImages[0].FileName
