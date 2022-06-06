@@ -2,7 +2,6 @@ package campaign
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/gosimple/slug"
 )
@@ -49,6 +48,7 @@ func (s *service) GetCampaignByID(input GetCampaignDetailInput) (Campaign, error
 }
 
 func (s *service) CreateCampaign(input CreateCampaignInput) (Campaign, error){
+	
 	campaign := Campaign{}
 	campaign.Name = input.Name
 	campaign.ShortDescription = input.ShortDescription
@@ -56,8 +56,7 @@ func (s *service) CreateCampaign(input CreateCampaignInput) (Campaign, error){
 	campaign.GoalAmount = input.GoalAmount
 	campaign.UserID = input.User.ID
 	// pembuatan slug
-	id := strconv.Itoa(input.User.ID)
-	slugCandidate := fmt.Sprintf("%s %s", input.Name, id)
+	slugCandidate := fmt.Sprintf("%s %d", input.Name, input.User.ID)
 	campaign.Slug = slug.Make(slugCandidate)
 
 	newCampaign, err := s.repository.Save(campaign)

@@ -6,7 +6,7 @@ import (
 )
 
 type Campaign struct {
-	ID string
+	ID int
 	UserID int
 	Name string
 	ShortDescription string

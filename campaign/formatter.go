@@ -1,7 +1,6 @@
 package campaign
 
 import (
-	"strconv"
 	"strings"
 )
 
@@ -42,9 +41,8 @@ type CampaignImageFormatter struct {
 }
 
 func FormatCampaign(campaign Campaign) CampaignsFormatter {
-	id, _ := strconv.Atoi(campaign.ID)
 	formatter := CampaignsFormatter{
-		ID:               id,
+		ID:               campaign.ID,
 		Name:            campaign.Name,
 		ShortDescription: campaign.ShortDescription,
 		GoalAmount:       campaign.GoalAmount,
@@ -74,9 +72,8 @@ func FormatCampaigns(campaigns []Campaign) []CampaignsFormatter {
 }
 
 func FormatCampaignDetail(campaign Campaign) CampaignDetailFormatter {
-	id, _ := strconv.Atoi(campaign.ID)
 	formatter := CampaignDetailFormatter{}
-	formatter.ID = id
+	formatter.ID = campaign.ID
 	formatter.Name = campaign.Name
 	formatter.ShortDescription = campaign.ShortDescription
 	formatter.Description = campaign.Description
