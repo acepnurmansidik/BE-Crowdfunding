@@ -108,6 +108,11 @@ func (h *campaignHandler) UpdateCampaign(c *gin.Context){
 		return
 	}
 
+	// utk melakukan pencegahan agar user hanya bisa update campaignnya sendiri
+	// ambil data user dari login
+	currentUser := c.MustGet("currentUser").(user.User)
+	inputData.User = currentUser
+
 	// update campaign
 	newCampaign, err := h.service.Update(inputID, inputData)
 	if err != nil {
