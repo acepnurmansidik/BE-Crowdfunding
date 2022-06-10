@@ -188,7 +188,7 @@ func (h *userHandler) UploadAvatar(c *gin.Context){
 	randomCrypto, _ := rand.Int(rand.Reader, big.NewInt(9999999999))
 
 	// gabungkan beberapa menjadi string
-	path := fmt.Sprintf("images/%d-%v-%s", userID, randomCrypto, file.Filename)
+	path := fmt.Sprintf("images/user/%d-%v-%s", userID, randomCrypto, file.Filename)
 
 	// upload file dari user ke folder images
 	err = c.SaveUploadedFile(file, path)
