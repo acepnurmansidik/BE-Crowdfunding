@@ -58,7 +58,6 @@ func (h *campaignHandler) GetCampaign(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-
 func (h *campaignHandler) CreateCampaign(c *gin.Context){
 	var input campaign.CreateCampaignInput
 
@@ -132,10 +131,13 @@ func (h *campaignHandler) UploadImage(c *gin.Context){
 	// tangkap dari form input
 	var input campaign.CreateCampaignImageInput
 
+
 	err := c.ShouldBind(&input)
-	if err != nil {
-		data := gin.H{"is_uploaded": false}
-		response := helper.APIResponse("Failed to upload campaign image", http.StatusBadRequest, "error", data)
+	if err != nil{
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed to upload campaign image", http.StatusBadRequest, "error", errorMessage)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -176,7 +178,6 @@ func (h *campaignHandler) UploadImage(c *gin.Context){
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-
 
 	data := gin.H{"is_uploaded": true}
 	response := helper.APIResponse("Campaign image successfuly uploaded", http.StatusOK, "success", data)
