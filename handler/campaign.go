@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"bwastartup/campaign"
+	"bwastartup/app/campaign"
+	"bwastartup/app/user"
 	"bwastartup/helper"
-	"bwastartup/user"
 	"crypto/rand"
 	"fmt"
 	"math/big"
