@@ -2,6 +2,7 @@ package handler
 
 import (
 	"bwastartup/app/transaction"
+	"bwastartup/app/user"
 	"bwastartup/helper"
 	"net/http"
 
@@ -24,6 +25,9 @@ func (h *transactionHandler) GetCampaignTransactions(c *gin.Context){
 		response := helper.APIResponse("Failed to get data campaign's transaction", http.StatusBadRequest, "error", nil)
 		c.JSON(http.StatusBadRequest, response)
 	}
+
+	currentUser := c.MustGet("currentUser").(user.User)
+	input.User = currentUser
 
 	transactions, err := h.service.GetTransactionsByCampaignID(input)
 	if err != nil {
