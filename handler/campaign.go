@@ -142,6 +142,11 @@ func (h *campaignHandler) UploadImage(c *gin.Context){
 		return
 	}
 
+	// ambil user ID nya dari JWT
+	currentUser := c.MustGet("currentUser").(user.User)
+	userID := currentUser.ID
+	input.User = currentUser
+
 	// tangkap file imagenya
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -151,18 +156,14 @@ func (h *campaignHandler) UploadImage(c *gin.Context){
 		return
 	}
 
-	// ambil user ID nya dari JWT
-	currentUser := c.MustGet("currentUser").(user.User)
-	userID := currentUser.ID
-
 	// set lokasi avatar
 	randomCrypto, _ := rand.Int(rand.Reader, big.NewInt(9999999999))
 
 	// gabungkan beberapa menjadi string
 	path := fmt.Sprintf("images/campaign/%d-%v-%s", userID, randomCrypto, file.Filename)
 
-	// upload file dari user ke folder images/campaign
-	err = c.SaveUploadedFile(file, path)
+	// save image ke db
+	_, err = h.service.SaveCampaignImage(input, path)
 	if err != nil {
 		data := gin.H{"is_uploaded": false}
 		response := helper.APIResponse("Failed to upload campaign image", http.StatusBadRequest, "error", data)
@@ -170,8 +171,8 @@ func (h *campaignHandler) UploadImage(c *gin.Context){
 		return
 	}
 
-	// save image ke db
-	_, err = h.service.SaveCampaignImage(input, path)
+	// upload file dari user ke folder images/campaign
+	err = c.SaveUploadedFile(file, path)
 	if err != nil {
 		data := gin.H{"is_uploaded": false}
 		response := helper.APIResponse("Failed to upload campaign image", http.StatusBadRequest, "error", data)
