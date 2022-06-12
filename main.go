@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bwastartup/app/campaign"
+	"bwastartup/app/transaction"
+	"bwastartup/app/user"
 	"bwastartup/auth"
-	"bwastartup/campaign"
 	"bwastartup/handler"
 	"bwastartup/helper"
-	"bwastartup/transaction"
-	"bwastartup/user"
 	"log"
 	"net/http"
 	"strings"

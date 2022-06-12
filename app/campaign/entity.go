@@ -1,7 +1,7 @@
 package campaign
 
 import (
-	"bwastartup/user"
+	"bwastartup/app/user"
 	"time"
 )
 
