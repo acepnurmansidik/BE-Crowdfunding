@@ -38,3 +38,20 @@ func (h *transactionHandler) GetCampaignTransactions(c *gin.Context){
 	response := helper.APIResponse("List of campaign's transactions", http.StatusOK, "success", transaction.FormatCampaignTransactions(transactions))
 	c.JSON(http.StatusOK, response)
 }
+
+func (h *transactionHandler) GetUserTransactions(c *gin.Context) {
+	// ambil user dari JWT
+	currentUser := c.MustGet("currentUser").(user.User)
+	userID := currentUser
+
+	// get transaction user
+	transactions, err := h.service.GetUserTransactionByUserID(userID.ID)
+	// error response
+	if err != nil {
+		response := helper.APIResponse("Failed to get user transactions", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+	}
+
+	response := helper.APIResponse("List of user transactions", http.StatusOK, "success", transactions)
+	c.JSON(http.StatusOK, response)
+}
