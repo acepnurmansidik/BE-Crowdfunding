@@ -4,7 +4,7 @@ import "gorm.io/gorm"
 
 type Repository interface{
 	GetCampaignByID(CampaignID int) ([]Transaction, error)
-	GetUserTransaction(userID int) ([]Transaction, error)
+	GetByUserID(userID int) ([]Transaction, error)
 }
 
 type repository struct{
@@ -25,10 +25,12 @@ func (r *repository) GetCampaignByID(CampaignID int) ([]Transaction, error){
 	return transactions, nil
 }
 
-func (r *repository) GetUserTransaction(userID int) ([]Transaction, error){
+func (r *repository) GetByUserID(userID int) ([]Transaction, error){
 	var transactions []Transaction
 
-	err := r.db.Preload("User").Where("user_id = ?", userID).Order("id desc").Find(&transactions).Error
+	// karena transaction tidak punya relasi ke campaign images, dan hanya campaign yang punya relasinya
+	// utk itu load Campaign beserta campaign images
+	err := r.db.Preload("Campaign.CampaignImages", "campaign_images.is_primary = 1").Where("user_id = ?", userID).Order("id desc").Find(&transactions).Error
 
 	if err != nil {
 		return []Transaction{}, err
