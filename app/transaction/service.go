@@ -1,6 +1,11 @@
 package transaction
 
-import "bwastartup/app/campaign"
+import (
+	"bwastartup/app/campaign"
+	"crypto/rand"
+	"fmt"
+	"math/big"
+)
 
 type service struct {
 	repository Repository
@@ -11,6 +16,7 @@ type service struct {
 type Service interface {
 	GetTransactionsByCampaignID(input GetCampaignTransactionsInput) ([]Transaction, error)
 	GetUserTransactionByUserID(userID int) ([]Transaction, error)
+	CreateTransaction(input CreateTransactionInput)(CreateTransactionInput, error)
 }
 
 func NewService(repository Repository, campaignRepository campaign.Repository) *service {
@@ -45,4 +51,25 @@ func (s *service) GetUserTransactionByUserID(userID int) ([]Transaction, error){
 	}
 
 	return transactions, nil
+}
+
+func (s *service) CreateTransaction(input CreateTransactionInput)(Transaction, error){
+	// create code random
+	randomCrypto1, _ := rand.Int(rand.Reader, big.NewInt(9999999999))
+	randomCrypto2, _ := rand.Int(rand.Reader, big.NewInt(99999))
+	// mapping data transaction from input user to db
+	trx := Transaction{}
+	trx.Amount = input.Amount
+	trx.CampaignID = input.CampaignID
+	trx.User.ID = input.User.ID
+	trx.Status = "pending"
+	trx.Code = fmt.Sprintf("%v%s", randomCrypto1, randomCrypto2)
+
+	transaction, err := s.repository.Save(trx)
+
+	if err != nil{
+		return transaction, err
+	}
+
+	return transaction, nil
 }
