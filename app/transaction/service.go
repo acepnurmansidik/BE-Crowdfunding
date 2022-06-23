@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"bwastartup/app/campaign"
+	"bwastartup/app/payment"
 	"crypto/rand"
 	"fmt"
 	"math/big"
@@ -10,6 +11,7 @@ import (
 type service struct {
 	repository Repository
 	campaignRepository campaign.Repository
+	paymentService payment.Service
 
 }
 
@@ -19,8 +21,8 @@ type Service interface {
 	GetUserTransactionByUserID(userID int) ([]Transaction, error)
 }
 
-func NewService(repository Repository, campaignRepository campaign.Repository) *service {
-	return &service{repository, campaignRepository}
+func NewService(repository Repository, campaignRepository campaign.Repository, paymentService payment.Service) *service {
+	return &service{repository, campaignRepository, paymentService}
 }
 
 func (s *service) GetTransactionsByCampaignID(input GetCampaignTransactionsInput) ([]Transaction, error){
