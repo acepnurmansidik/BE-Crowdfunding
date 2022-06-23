@@ -67,11 +67,29 @@ func (s *service) CreateTransaction(input CreateTransactionInput)(Transaction, e
 	trx.Status = "pending"
 	trx.Code = fmt.Sprintf("%v%s", randomCrypto1, randomCrypto2)
 
-	transaction, err := s.repository.Save(trx)
-
+	newTtransaction, err := s.repository.Save(trx)
 	if err != nil{
-		return transaction, err
+		return newTtransaction, err
 	}
 
-	return transaction, nil
+	// karena ada allower not import cycle, perlu dimapping ke dalam Transaction payment
+	paymentTransaction := payment.Transaction{}
+	paymentTransaction.ID = trx.ID
+	paymentTransaction.Amount = trx.Amount
+
+	// get link yang didapat dari midtrans
+	paymentURL, err := s.paymentService.GetPaymentURL(paymentTransaction, input.User)
+	if err != nil{
+		return newTtransaction, err
+	}
+
+	newTtransaction.PaymentURL = paymentURL
+
+	// lakukan update paymentURL ke db
+	newTtransaction, err = s.repository.Update(newTtransaction)
+	if err != nil {
+		return newTtransaction, err
+	}
+
+	return newTtransaction, nil
 }
