@@ -74,8 +74,8 @@ func (s *service) CreateTransaction(input CreateTransactionInput)(Transaction, e
 
 	// karena ada allower not import cycle, perlu dimapping ke dalam Transaction payment
 	paymentTransaction := payment.Transaction{}
-	paymentTransaction.ID = trx.ID
-	paymentTransaction.Amount = trx.Amount
+	paymentTransaction.ID = newTtransaction.ID
+	paymentTransaction.Amount = newTtransaction.Amount
 
 	// get link yang didapat dari midtrans
 	paymentURL, err := s.paymentService.GetPaymentURL(paymentTransaction, input.User)
