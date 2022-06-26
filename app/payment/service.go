@@ -1,6 +1,7 @@
 package payment
 
 import (
+	"bwastartup/app/campaign"
 	"bwastartup/app/transaction"
 	"bwastartup/app/user"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 
 type service struct{
 	transactionRepository transaction.Repository
+	campaignRepository campaign.Repository
 }
 
 type Service interface{
@@ -17,8 +19,8 @@ type Service interface{
 	ProcessPayment(input transaction.TransactionNotificationInput) error
 }
 
-func NewService(transactionRepository transaction.Repository) *service{
-	return &service{transactionRepository}
+func NewService(transactionRepository transaction.Repository, campaignRepository campaign.Repository) *service{
+	return &service{transactionRepository, campaignRepository}
 }
 
 func (s *service) GetPaymentURL(transaction Transaction, user user.User) (string, error){
@@ -75,6 +77,26 @@ func (s *service) ProcessPayment(input transaction.TransactionNotificationInput)
 	if err != nil {
 		return err
 	}
+
+	// get campaign from updateTransaction
+	campaign, err := s.campaignRepository.FindByID(updateTransaction.CampaignID)
+	if err != nil {
+		return err
+	}
+
+	// check trasanction status from midtran, where transaction.Status = "paid"
+	if updateTransaction.Status == "paid" {
+		campaign.BackerCount = campaign.BackerCount + 1
+		campaign.CurrentAmount = campaign.CurrentAmount + updateTransaction.Amount
+		
+		// update campaign for backer count & amount
+		_, err := s.campaignRepository.Update(campaign)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 
 
 }
