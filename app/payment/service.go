@@ -97,6 +97,4 @@ func (s *service) ProcessPayment(input transaction.TransactionNotificationInput)
 	}
 
 	return nil
-
-
 }
