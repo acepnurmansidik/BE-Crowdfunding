@@ -28,14 +28,14 @@ func main() {
 	}
 
 	authService := auth.NewService()
-	paymentService := payment.NewService()
-
+	
 	userRepository := user.NewRepository(db)
 	campaignRepository := campaign.NewRepository(db)
 	transactionRepository := transaction.NewRepository(db)
-
+	
 	userService := user.NewService(userRepository)
 	campaignService := campaign.NewService(campaignRepository)
+	paymentService := payment.NewService(transactionRepository)
 	transactionService := transaction.NewService(transactionRepository, campaignRepository, paymentService)
 
 	userHandler := handler.NewUserHandler(userService, authService)
