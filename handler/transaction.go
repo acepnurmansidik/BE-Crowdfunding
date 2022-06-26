@@ -94,7 +94,7 @@ func (h *transactionHandler) GetNotificationFromMidtrans(c *gin.Context){
 	}
 
 	// this transaction midtran only has access
-	err = h.paymentService.ProcessPayment(input)
+	err = h.service.ProcessPayment(input)
 	if err != nil {
 		response := helper.APIResponse("Failed to process notififcation", http.StatusBadRequest, "error", nil)
 		c.JSON(http.StatusBadRequest, response)

@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"math/big"
+	"strconv"
 )
 
 type service struct {
@@ -19,6 +20,8 @@ type Service interface {
 	CreateTransaction(input CreateTransactionInput) (Transaction, error)
 	GetTransactionsByCampaignID(input GetCampaignTransactionsInput) ([]Transaction, error)
 	GetUserTransactionByUserID(userID int) ([]Transaction, error)
+	ProcessPayment(input TransactionNotificationInput) error
+
 }
 
 func NewService(repository Repository, campaignRepository campaign.Repository, paymentService payment.Service) *service {
@@ -92,4 +95,50 @@ func (s *service) CreateTransaction(input CreateTransactionInput)(Transaction, e
 	}
 
 	return newTtransaction, nil
+}
+
+func (s *service) ProcessPayment(input TransactionNotificationInput) error{
+	// get transaction id from input
+	transaction_id, _ := strconv.Atoi(input.OrderID)
+
+	// use transaction id for collect transaction
+	transaction, err := s.repository.GetByID(transaction_id)
+	if err != nil {
+		return err
+	}
+
+	// response from midtrans for update status transaction
+	if(input.PaymentType == "credit_card" && input.TransactionStatus == "capture" && input.FraudStatus == "accept"){
+		transaction.Status = "paid"
+	}else if(input.TransactionStatus == "settlement"){
+		transaction.Status = "paid"
+	}else if(input.TransactionStatus == "deny" || input.TransactionStatus == "expire" || input.TransactionStatus == "cancel"){
+		transaction.Status = "cancelled"
+	}
+
+	// update status transaction from response midtrans
+	updateTransaction, err := s.repository.Update(transaction)
+	if err != nil {
+		return err
+	}
+
+	// get campaign from updateTransaction
+	campaign, err := s.campaignRepository.FindByID(updateTransaction.CampaignID)
+	if err != nil {
+		return err
+	}
+
+	// check trasanction status from midtran, where transaction.Status = "paid"
+	if updateTransaction.Status == "paid" {
+		campaign.BackerCount = campaign.BackerCount + 1
+		campaign.CurrentAmount = campaign.CurrentAmount + updateTransaction.Amount
+		
+		// update campaign for backer count & amount
+		_, err := s.campaignRepository.Update(campaign)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
