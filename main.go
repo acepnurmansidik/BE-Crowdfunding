@@ -10,10 +10,14 @@ import (
 	"bwastartup/helper"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strings"
+
+	webHandler "bwastartup/web/handler"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -43,9 +47,15 @@ func main() {
 	campaignHandler := handler.NewCampaignHandler(campaignService)
 	transactionHandler := handler.NewTransactionHandler(transactionService, paymentService)
 
+	// Web CMS
+	userWebHandler := webHandler.NewUerHandler()
 
 	router := gin.Default()
 	router.Use(cors.Default())
+
+	// load template pada direktori template
+	router.HTMLRender = loadTemplates("./web/templates")
+
 	// menambhakan routing utk gambar
 	router.Static("/images", "./images")
 	api := router.Group("/api/v1")
@@ -65,6 +75,9 @@ func main() {
 	api.GET("/transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
 	api.POST("/transaction", authMiddleware(authService, userService), transactionHandler.CreateTransaction)
 	api.POST("/transaction/notification", transactionHandler.GetNotificationFromMidtrans)
+
+	// Web CMS
+	router.GET("/users", userWebHandler.Index)
 
 	router.Run()
 	
@@ -130,4 +143,31 @@ func authMiddleware(authService auth.Service, userService user.Service) gin.Hand
 		// set user yang sedag akses aplikasi
 		c.Set("currentUser", user)
 	}
+}
+
+
+// template CMS
+func loadTemplates(templatesDir string) multitemplate.Renderer {
+  r := multitemplate.NewRenderer()
+
+// load template pada direktori layouts
+  layouts, err := filepath.Glob(templatesDir + "/layouts/*")
+  if err != nil {
+    panic(err.Error())
+  }
+
+// load semua template
+  includes, err := filepath.Glob(templatesDir + "/**/*")
+  if err != nil {
+    panic(err.Error())
+  }
+
+  // Generate our templates map from our layouts/ and includes/ directories
+  for _, include := range includes {
+    layoutCopy := make([]string, len(layouts))
+    copy(layoutCopy, layouts)
+    files := append(layoutCopy, include)
+    r.AddFromFiles(filepath.Base(include), files...)
+  }
+  return r
 }
