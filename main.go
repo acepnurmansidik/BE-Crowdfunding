@@ -56,8 +56,13 @@ func main() {
 	// load template pada direktori template
 	router.HTMLRender = loadTemplates("./web/templates")
 
-	// menambhakan routing utk gambar
+	// menambhakan routing utk gambar/file statis
 	router.Static("/images", "./images")
+	router.Static("/css", "./web/assets/css")
+	router.Static("/js", "./web/assets/js")
+	router.Static("/webfonts", "./web/assets/webfonts")
+
+	// grouping API by version
 	api := router.Group("/api/v1")
 	api.POST("/users", userHandler.RegisterUser)
 	api.POST("/sessions", userHandler.Login)
