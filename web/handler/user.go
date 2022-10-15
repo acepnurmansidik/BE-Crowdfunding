@@ -19,8 +19,9 @@ func NewUerHandler(userService user.Service) *userHandler {
 func (h *userHandler) Index(c *gin.Context){
 	users, err := h.userService.GetAllUser()
 
-	if err != nil{
-		// later                    
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return                
 	}
 
 	c.HTML(http.StatusOK, "user_index.html", gin.H{"users": users})
