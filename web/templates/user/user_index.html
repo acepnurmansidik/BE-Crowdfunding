@@ -1,8 +1,25 @@
 {{ define "content" }}
-<h2 class="mb-4">Blank/Starter</h2>
+<h2 class="mb-4">List of User</h2>
 <div class="card mb-4">
   <div class="card-body">
-    This i a blank page you can use as a starting point
+    <table class="table mb-0">
+      <thead class="thead-light">
+        <tr>
+          <th>Name</th>
+          <th>Occupation</th>
+          <th>Email</th>
+        </tr>
+        <tbody>
+            {{ range .users }}
+            <tr>
+              <td>{{ .Name }}</td>
+              <td>{{ .Occupation }}</td>
+              <td>{{ .Email }}</td>
+            </tr>
+            {{ end }}
+        </tbody>
+      </thead>
+    </table>
   </div>
 </div>
 {{ end }}

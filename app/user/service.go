@@ -12,6 +12,7 @@ type Service interface {
 	IsEmailAvailable(input CheckEmailInput) (bool, error)
 	SaveAvatar(ID int, fileLocation string) (User, error)
 	GetUserByID(userID int) (User, error)
+	GetAllUser() ([]User, error)
 }
 
 type service struct {
@@ -118,4 +119,14 @@ func (s *service) GetUserByID(userID int) (User, error){
 	}
 
 	return user, nil
+}
+
+// Service for get all data user
+func (s *service) GetAllUser() ([]User, error) {
+	users, err := s.repository.FindAll()
+	if err != nil {
+		return users, err
+	}
+
+	return users, nil
 }

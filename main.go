@@ -48,7 +48,7 @@ func main() {
 	transactionHandler := handler.NewTransactionHandler(transactionService, paymentService)
 
 	// Web CMS
-	userWebHandler := webHandler.NewUerHandler()
+	userWebHandler := webHandler.NewUerHandler(userService)
 
 	router := gin.Default()
 	router.Use(cors.Default())
