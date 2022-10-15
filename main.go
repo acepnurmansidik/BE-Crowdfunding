@@ -83,6 +83,7 @@ func main() {
 
 	// Web CMS
 	router.GET("/users", userWebHandler.Index)
+	router.GET("/users/new", userWebHandler.New)
 
 	router.Run()
 	

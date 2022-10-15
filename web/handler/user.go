@@ -26,3 +26,8 @@ func (h *userHandler) Index(c *gin.Context){
 
 	c.HTML(http.StatusOK, "user_index.html", gin.H{"users": users})
 }
+
+// load halaman create user
+func (h *userHandler) New(c *gin.Context){
+	c.HTML(http.StatusOK, "user_new.html", nil)
+} 
