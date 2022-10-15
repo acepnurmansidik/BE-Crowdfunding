@@ -39,7 +39,10 @@ func (h *userHandler) Create(c *gin.Context){
 	// get data
 	err := c.ShouldBind(&input)
 	if err != nil {
-		// 
+		input.Error = err
+		// reload halaman, beserta value yang sudah diisi
+		c.HTML(http.StatusOK, "user_new.html", input)
+		return
 	}
 
 	// mapping
@@ -51,7 +54,8 @@ func (h *userHandler) Create(c *gin.Context){
 
 	_, err = h.userService.RegisterUser(registerInput)
 	if err != nil {
-		// 
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
 	}
 
 	c.Redirect(http.StatusFound, "/users")

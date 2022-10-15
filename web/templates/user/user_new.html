@@ -1,5 +1,10 @@
 {{ define "content" }}
 <h2 class="mb-4">Create New User</h2>
+
+{{ if .Error }}
+<div class="alert alert-danger">{{ .Error }}</div>
+{{ end }}
+
 <div class="card mb-4">
   <div class="card-body">
     <form action="/users" method="POST">
@@ -11,6 +16,7 @@
           placeholder="Enter name"
           required
           class="form-control"
+          value="{{ .Name }}"
         />
       </div>
 
@@ -22,6 +28,7 @@
           placeholder="Enter email"
           required
           class="form-control"
+          value="{{ .Email }}"
         />
       </div>
 
@@ -33,6 +40,7 @@
           placeholder="Enter occupation"
           required
           class="form-control"
+          value="{{ .Occupation }}"
         />
       </div>
 
