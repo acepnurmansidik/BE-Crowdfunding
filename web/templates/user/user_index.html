@@ -12,14 +12,24 @@
           <th>Name</th>
           <th>Occupation</th>
           <th>Email</th>
+          <th></th>
         </tr>
         <tbody>
             {{ range .users }}
             <tr>
-              <td><img src="{{ .AvatarFileName }}" alt="thumbnail" class="img-fluid img-thumbnail" width="60"></td>
+              <td>
+                {{ if .AvatarFileName }}
+                  <img src="{{ .AvatarFileName }}" alt="thumbnail" class="img-fluid img-thumbnail" width="60">
+                {{ else }}
+                  <img src="images/user/images.png" alt="thumbnail" class="img-fluid img-thumbnail" width="60">
+                {{ end }}
+              </td>
               <td>{{ .Name }}</td>
               <td>{{ .Occupation }}</td>
               <td>{{ .Email }}</td>
+              <td>
+                <a href="/users/edit/{{ .ID }}"><i class="fa fa-edit"></i></a>
+              </td>
             </tr>
             {{ end }}
         </tbody>
