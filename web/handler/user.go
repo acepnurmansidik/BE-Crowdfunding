@@ -72,7 +72,13 @@ func (h *userHandler) Edit(c *gin.Context){
 		return
 	}
 
-	c.HTML(http.StatusOK, "user_edit.html", resgiterUser)
+	input := user.FormUpdateUserInput{}
+	input.ID = resgiterUser.ID
+	input.Name = resgiterUser.Name
+	input.Email = resgiterUser.Email
+	input.Occupation = resgiterUser.Occupation
+
+	c.HTML(http.StatusOK, "user_edit.html", input)
 }
 
 func (h *userHandler) Update(c *gin.Context){
@@ -84,7 +90,10 @@ func (h *userHandler) Update(c *gin.Context){
 	var input user.FormUpdateUserInput
 	err := c.ShouldBind(&input)
 	if err != nil {
-		// later
+		input.Error = err
+		// reload halaman, beserta value yang sudah diisi
+		c.HTML(http.StatusOK, "user_edit.html", input)
+		return
 	}
 
 	// binding id nya
