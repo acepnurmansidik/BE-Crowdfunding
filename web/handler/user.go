@@ -2,6 +2,9 @@ package handler
 
 import (
 	"bwastartup/app/user"
+	"crypto/rand"
+	"fmt"
+	"math/big"
 	"net/http"
 	"strconv"
 
@@ -114,4 +117,39 @@ func (h *userHandler) NewAvatar(c *gin.Context){
 
 
 	c.HTML(http.StatusOK, "user_avatar.html", gin.H{"ID": id})
+}
+
+func (h *userHandler) CreateAvatar(c *gin.Context){
+	idParam := c.Param("id")
+	id, _ := strconv.Atoi(idParam)
+
+	// ambil avatar dari user
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+
+	userID := id
+
+	// random name
+	randomCrypto, _ := rand.Int(rand.Reader, big.NewInt(9999999999))
+	// set lokasi avatar, gabungkan beberapa menjadi string
+	path := fmt.Sprintf("images/user/%d-%v-%s", userID, randomCrypto, file.Filename)
+
+	// upload file dari user ke folder images
+	err = c.SaveUploadedFile(file, path)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+
+	// save avatar ke db berdasarkan userID
+	_, err = h.userService.SaveAvatar(userID, path)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/users")
 }
