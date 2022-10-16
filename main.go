@@ -48,7 +48,8 @@ func main() {
 	transactionHandler := handler.NewTransactionHandler(transactionService, paymentService)
 
 	// Web CMS
-	userWebHandler := webHandler.NewUerHandler(userService)
+	userWebHandler := webHandler.NewUserHandler(userService)
+	campaignWebHandler := webHandler.NewCampaignHandler(campaignService)
 
 	router := gin.Default()
 	router.Use(cors.Default())
@@ -89,6 +90,8 @@ func main() {
 	router.POST("/users/update/:id", userWebHandler.Update)
 	router.GET("/users/avatar/:id", userWebHandler.NewAvatar)
 	router.POST("/users/avatar/:id", userWebHandler.CreateAvatar)
+
+	router.GET("/campaigns", campaignWebHandler.Index)
 
 	router.Run()
 	
