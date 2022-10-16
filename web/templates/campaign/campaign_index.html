@@ -20,12 +20,12 @@
                 {{ if .CampaignImages }}
                   <img src="{{ (index .CampaignImages 0).FileName }}" alt="thumbnail" class="img-fluid img-thumbnail" width="60">
                 {{ else }}
-                  <img src="images/user/images.png" alt="thumbnail" class="img-fluid img-thumbnail" width="60">
+                  <img src="images/campaign/campaign.png" alt="thumbnail" class="img-fluid img-thumbnail" width="60">
                 {{ end }}
               </td>
               <td>{{ .Name }}</td>
               <td>{{ .ShortDescription }}</td>
-              <td>{{ .GoalAmount }}</td>
+              <td>{{ .GoalAmountFormatIDR }}</td>
               <td>
                 <a href="/campaigns/{{ .ID }}"><i class="fa fa-edit"></i></a>
               </td>
