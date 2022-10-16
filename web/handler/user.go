@@ -74,3 +74,27 @@ func (h *userHandler) Edit(c *gin.Context){
 
 	c.HTML(http.StatusOK, "user_edit.html", resgiterUser)
 }
+
+func (h *userHandler) Update(c *gin.Context){
+	// get id di parameter
+	idParam := c.Param("id")
+	id, _ := strconv.Atoi(idParam)
+
+	// tangkap value dari form input
+	var input user.FormUpdateUserInput
+	err := c.ShouldBind(&input)
+	if err != nil {
+		// later
+	}
+
+	// binding id nya
+	input.ID = id
+	// update user
+	_, err = h.userService.UpdateUser(input)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/users")
+}
