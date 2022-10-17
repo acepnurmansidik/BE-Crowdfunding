@@ -3,6 +3,9 @@ package handler
 import (
 	"bwastartup/app/campaign"
 	"bwastartup/app/user"
+	"crypto/rand"
+	"fmt"
+	"math/big"
 	"net/http"
 	"strconv"
 
@@ -88,4 +91,55 @@ func (h *campaignHandler) NewImage(c *gin.Context){
 	id, _ := strconv.Atoi(idParam)
 
 	c.HTML(http.StatusOK, "campaign_image.html", gin.H{"ID": id})
+}
+
+func (h *campaignHandler) CreateImage(c *gin.Context) {
+	// tangkap imagenya dari form
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+
+	// Tangkap ID dari campaign dari parameter
+	idParam := c.Param("id")
+	id, _ := strconv.Atoi(idParam)
+
+	// cek campaign & cari user berdasarakan campaign
+	exitingCampaign, err := h.campaignService.GetCampaignByID(campaign.GetCampaignDetailInput{ID: id})
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+
+	// set userID dari exitingCampaign
+	userID := exitingCampaign.UserID
+
+	// set number random untuk filename image
+	randomCrypto, _ := rand.Int(rand.Reader, big.NewInt(9999999999))
+
+	// gabungkan beberapa menjadi string
+	path := fmt.Sprintf("images/campaign/%d-%v-%s", userID, randomCrypto, file.Filename)
+
+	// Save/upload image ke server
+	err = c.SaveUploadedFile(file, path)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+
+	// mapping untuk membuat create image campaign
+	createCampaignImageInput := campaign.CreateCampaignImageInput{}
+	createCampaignImageInput.CampaignID = id
+	createCampaignImageInput.User = exitingCampaign.User
+	createCampaignImageInput.IsPrimary = "true"
+
+	// save image ke database
+	_, err = h.campaignService.SaveCampaignImage(createCampaignImageInput, path)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/campaigns")
 }
