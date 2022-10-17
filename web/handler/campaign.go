@@ -39,3 +39,45 @@ func (h *campaignHandler) New(c *gin.Context){
 
 	c.HTML(http.StatusOK, "campaign_new.html", input)
 }
+
+func (h *campaignHandler) Create(c *gin.Context){
+	var input campaign.FormCreateCampaignInput
+
+	err := c.ShouldBind(&input)
+	if err != nil {
+		// jika error ambil kembali semua data usernya
+		users, e := h.userService.GetAllUser()
+		if e != nil {
+			c.HTML(http.StatusInternalServerError, "error.html", nil)
+			return
+		}
+
+		input.Users = users
+		input.Error = err
+	}
+
+	// ambil data user
+	user, err := h.userService.GetUserByID(input.UserID)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+
+	// mapping data ke dalam CreateCampaignInput
+	createCampaignInput := campaign.CreateCampaignInput{}
+	createCampaignInput.Name = input.Name
+	createCampaignInput.GoalAmount = input.GoalAmount
+	createCampaignInput.ShortDescription = input.ShortDescription
+	createCampaignInput.Description = input.Description
+	createCampaignInput.Perks = input.Perks
+	createCampaignInput.User = user
+
+	// panggil function create campaign
+	_, err = h.campaignService.CreateCampaign(createCampaignInput)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/campaigns")
+}

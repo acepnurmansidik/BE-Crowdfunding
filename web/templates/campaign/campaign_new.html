@@ -33,18 +33,6 @@
       </div>
 
       <div class="form-group">
-        <label for="short_description">Short Description</label>
-        <input
-          type="text"
-          name="short_description"
-          placeholder="Enter short description"
-          required
-          class="form-control"
-          value="{{ .ShortDescription }}"
-        />
-      </div>
-
-      <div class="form-group">
         <label for="goal_amount">GoalAmount</label>
         <input
           type="number"
@@ -65,6 +53,18 @@
           required
           class="form-control"
           value="{{ .Perks }}"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="short_description">Short Description</label>
+        <input
+          type="text"
+          name="short_description"
+          placeholder="Enter short description"
+          required
+          class="form-control"
+          value="{{ .ShortDescription }}"
         />
       </div>
 
