@@ -168,3 +168,46 @@ func (h *campaignHandler) Edit(c *gin.Context){
 	// lalu kirim ke halaman edit campaign untuk di render
 	c.HTML(http.StatusOK, "campaign_edit.html", input)
 }
+
+func (h *campaignHandler) Update(c *gin.Context){
+	// ambil id dari parameter
+	idParam := c.Param("id")
+	id, _ := strconv.Atoi(idParam)
+
+	var input campaign.FormUpdateCampaignInput
+
+	// binding dari form input
+	err := c.ShouldBind(&input)
+	if err != nil {
+		input.Error = err
+		input.ID = id
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+
+	// ambil data user campaign berdasarkan id dari param
+	existingCampaign, err := h.campaignService.GetCampaignByID(campaign.GetCampaignDetailInput{ID: id})
+	if err != nil {
+		input.Error = err
+		input.ID = id
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+
+	// mapping/passsing data input
+	updateInput := campaign.CreateCampaignInput{}
+	updateInput.Name = input.Name
+	updateInput.ShortDescription = input.ShortDescription
+	updateInput.Description = input.Description
+	updateInput.GoalAmount = input.GoalAmount
+	updateInput.Perks = input.Perks
+	updateInput.User = existingCampaign.User
+	
+	_, err = h.campaignService.Update(campaign.GetCampaignDetailInput{ID: id}, updateInput)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/campaigns")
+}
