@@ -7,19 +7,7 @@
 
 <div class="card mb-4">
   <div class="card-body">
-    <form action="/campaigns" method="POST">
-      <div class="form-group">
-        <label for="user_id">User</label>
-        <select name="user_id" class="form-control">
-          <option value="">-- Select user --</option>
-          {{ range .Users }} {{ if eq .ID $.UserID }}
-          <option value="{{ .ID }}" selected>{{ .Name }}</option>
-          {{ else }}
-          <option value="{{ .ID }}">{{ .Name }}</option>
-          {{ end }} {{ end }}
-        </select>
-      </div>
-
+    <form action="/campaigns/update/{{ .ID }}" method="POST">
       <div class="form-group">
         <label for="name">Name</label>
         <input

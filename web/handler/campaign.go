@@ -93,7 +93,7 @@ func (h *campaignHandler) NewImage(c *gin.Context){
 	c.HTML(http.StatusOK, "campaign_image.html", gin.H{"ID": id})
 }
 
-func (h *campaignHandler) CreateImage(c *gin.Context) {
+func (h *campaignHandler) CreateImage(c *gin.Context){
 	// tangkap imagenya dari form
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -142,4 +142,29 @@ func (h *campaignHandler) CreateImage(c *gin.Context) {
 	}
 
 	c.Redirect(http.StatusFound, "/campaigns")
+}
+
+func (h *campaignHandler) Edit(c *gin.Context){
+	// ambil id campaign di parameter
+	idParam := c.Param("id")
+	id, _ := strconv.Atoi(idParam)
+
+	// cari campaign berdasarkan id dari param
+	existingCampaign, err := h.campaignService.GetCampaignByID(campaign.GetCampaignDetailInput{ID: id})
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+
+	// mapping/passing data campaign
+	input := campaign.FormUpdateCampaignInput{}
+	input.ID = existingCampaign.ID
+	input.Name = existingCampaign.Name
+	input.ShortDescription = existingCampaign.ShortDescription
+	input.Description = existingCampaign.Description
+	input.GoalAmount = existingCampaign.GoalAmount
+	input.Perks = existingCampaign.Perks
+
+	// lalu kirim ke halaman edit campaign untuk di render
+	c.HTML(http.StatusOK, "campaign_edit.html", input)
 }
