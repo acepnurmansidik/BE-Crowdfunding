@@ -50,6 +50,7 @@ func main() {
 	// Web CMS
 	userWebHandler := webHandler.NewUserHandler(userService)
 	campaignWebHandler := webHandler.NewCampaignHandler(campaignService, userService)
+	transactionsWebHandler := webHandler.NewTransactionHandler(transactionService)
 
 	router := gin.Default()
 	router.Use(cors.Default())
@@ -99,6 +100,8 @@ func main() {
 	router.GET("/campaigns/edit/:id", campaignWebHandler.Edit)
 	router.POST("/campaigns/update/:id", campaignWebHandler.Update)
 	router.GET("/campaigns/show/:id", campaignWebHandler.Show)
+
+	router.GET("/transactions", transactionsWebHandler.Index)
 
 	router.Run()
 	
