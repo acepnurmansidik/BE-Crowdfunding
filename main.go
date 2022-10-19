@@ -111,6 +111,7 @@ func main() {
 	router.GET("/transactions", authAdminMiddleware(), transactionsWebHandler.Index)
 
 	router.GET("/login", sessionsWebHandler.New)
+	router.POST("/session", sessionsWebHandler.Create)
 
 	router.Run()
 	
