@@ -1,32 +1,16 @@
 {{ define "content" }}
 <h2 class="mb-4">Create New Campaign</h2>
 
-{{ if .Error }}
-<div class="alert alert-danger">{{ .Error }}</div>
-{{ end }}
-
 <div class="card mb-4">
   <div class="card-body">
-    <form action="/campaigns" method="POST">
-      <div class="form-group">
-        <label for="user_id">User</label>
-        <select name="user_id" class="form-control">
-          <option value="">-- Select user --</option>
-          {{ range .Users }} {{ if eq .ID $.UserID }}
-          <option value="{{ .ID }}" selected>{{ .Name }}</option>
-          {{ else }}
-          <option value="{{ .ID }}">{{ .Name }}</option>
-          {{ end }} {{ end }}
-        </select>
-      </div>
-
+    <form>
       <div class="form-group">
         <label for="name">Name</label>
         <input
           type="text"
           name="name"
           placeholder="Enter name"
-          required
+          disabled
           class="form-control"
           value="{{ .Name }}"
         />
@@ -35,12 +19,36 @@
       <div class="form-group">
         <label for="goal_amount">Goal Amount</label>
         <input
-          type="number"
+          type="text"
           name="goal_amount"
           placeholder="Enter goal amount"
-          required
+          disabled
           class="form-control"
-          value="{{ .GoalAmount }}"
+          value="{{ .GoalAmountFormatIDR }}"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="goal_amount">Current Amount</label>
+        <input
+          type="text"
+          name="current_amount"
+          placeholder="Enter goal amount"
+          disabled
+          class="form-control"
+          value="{{ .CurrentAmountFormatIDR }}"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="goal_amount">Backer Count</label>
+        <input
+          type="text"
+          name="backer_count"
+          placeholder="Enter goal amount"
+          disabled
+          class="form-control"
+          value="{{ .BackerCount }}"
         />
       </div>
 
@@ -50,7 +58,7 @@
           type="text"
           name="perks"
           placeholder="Enter perks (comma separated)"
-          required
+          disabled
           class="form-control"
           value="{{ .Perks }}"
         />
@@ -62,7 +70,7 @@
           type="text"
           name="short_description"
           placeholder="Enter short description"
-          required
+          disabled
           class="form-control"
           value="{{ .ShortDescription }}"
         />
@@ -75,7 +83,7 @@
           cols="30"
           rows="10"
           class="form-control"
-          required
+          disabled
           placeholder="Enter description"
         >
 {{ .Description }}</textarea
