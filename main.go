@@ -112,6 +112,7 @@ func main() {
 
 	router.GET("/login", sessionsWebHandler.New)
 	router.POST("/session", sessionsWebHandler.Create)
+	router.GET("/logout", sessionsWebHandler.Destroy)
 
 	router.Run()
 	

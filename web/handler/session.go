@@ -47,3 +47,13 @@ func (h *sessionHandler) Create(c *gin.Context) {
 	// redirect ke halaman user jika berhail login
 	c.Redirect(http.StatusFound, "/users")
 }
+
+func (h *sessionHandler) Destroy(c *gin.Context) {
+	// delete session
+	session := sessions.Default(c)
+	session.Clear()
+	session.Save()
+
+	// redirect ke halaman login
+	c.Redirect(http.StatusFound, "/login")
+}
